@@ -6,6 +6,7 @@ import requests
 from pprint import pprint
 import configparser
 import json
+import yadisk
 
 
 
@@ -38,31 +39,37 @@ class VkUser:
         
         list_photo = []
         dict_photo = {}
+        
         req = requests.get(get_photo, params={**self.params, **get_photo_params}).json()
         req = req['response']['items']
         for z in req:
             req = z['sizes']
-            for size in req:
+            for size in req:                
                 if size['type'] == 'z':
                     list_photo.append(size['url'])
                     dict_photo[z['likes']['count']] = size['url']
+                    
+               
         return dict_photo
 
 
 vk_client = VkUser(token, '5.131')
-pprint(vk_client.photos_get('1'))
+photo_vk = vk_client.photos_get('1')
 
 
-class YandexDisk:
+# TOKEN = "AQAEA7qj0SyLAADLWxJK0PtrYUrqkqZl0aVPcxY"
 
-    def __init__(self, token):
-        self.token = token
 
-    def get_headers(self):
-        return {
-            'Content-Type': 'application/json',
-            'Authorization': f'OAuth {self.token}'
-        }
+# class YandexDisk:
+
+#     def __init__(self, token):
+#         self.token = token
+
+#     def get_headers(self):
+#         return {
+#             'Content-Type': 'application/json',
+#             'Authorization': f'OAuth {self.token}'
+#         }
 
    
     
@@ -75,16 +82,20 @@ class YandexDisk:
         return response.json()
 
 
-    def upload_file_to_disk(self, disk_file_path):
+    def upload_file_to_disk(self, disk_file_path):        
         href = self._get_upload_link(disk_file_path=disk_file_path).get("href", "")
-        response = requests.post(href, 'https://sun4-17.userapi.com/impf/byTiuiCzlcw-7HQqNI8VeOhaKVPrGm-Sdt9wsQ/banGDBotKVM.jpg?size=731x1000&quality=96&sign=432b2466a268e6e51f46eb47c80ce26a&c_uniq_tag=IraiqwN4-ugqtJPjK4lTRIFF5_YM2KEiJGJmVi9HjtY&type=album')
+
+        response = requests.put('https://sun4-17.userapi.com/impf/byTiuiCzlcw-7HQqNI8VeOhaKVPrGm-Sdt9wsQ/banGDBotKVM.jpg?size=731x1000&quality=96&sign=432b2466a268e6e51f46eb47c80ce26a&c_uniq_tag=IraiqwN4-ugqtJPjK4lTRIFF5_YM2KEiJGJmVi9HjtY&type=album', '56')
         response.raise_for_status()
         if response.status_code == 201:
             print('Загружено')
 
-ya = YandexDisk(token=TOKEN)
-# # pprint(ya.get_files_list())
-pprint(ya.upload_file_to_disk('test'))
-
+ya = yadisk.YaDisk(token=TOKEN)
+# ya = YandexDisk(token=TOKEN)
+pprint(photo_vk)
+for key, send in photo_vk.items():
+    ya.upload_url(send, key)
+# pprint(ya.get_files_list())
+# pprint(ya.upload_file_to_disk('56'))
 
 
