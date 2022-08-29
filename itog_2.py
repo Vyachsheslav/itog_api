@@ -38,16 +38,13 @@ class VkUser:
         items = req['response']['items']
         counter = 0
         for item in items:
-            sizes = item['sizes']            
-            for size in sizes:
-                if size['type'] == 'z':
-                    photos[counter] = {}
-                    photos[counter]['name'] = str(item['likes']['count'])
-                    names.append(photos[counter]['name'])
-                    photos[counter]['url'] = size['url']
-                    photos[counter]['date'] = dt.utcfromtimestamp(item['date']).strftime('%Y-%m-%d')
-                    photos[counter]['size'] = 'z'
-                    counter += 1
+            photos[counter] = {}
+            photos[counter]['name'] = str(item['likes']['count'])
+            names.append(photos[counter]['name'])
+            photos[counter]['url'] = item['sizes'][-1]['url']
+            photos[counter]['date'] = dt.utcfromtimestamp(item['date']).strftime('%Y-%m-%d')
+            photos[counter]['size'] = item['sizes'][-1]['type']
+            counter += 1
 
         for name in set(names):
             if names.count(name) >= 2:
